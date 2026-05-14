@@ -128,5 +128,10 @@ standard workflow, every terminal state, every guarded transition for
 expiry and cancellation, and a representative set of illegal inputs.
 Parametrised tests confirm that every terminal state rejects every
 defined event. The full suite executes in under one second, which makes
-it suitable for inclusion in a continuous integration pipeline. The
-testing approach and detailed results are presented in Section 7.
+it suitable for inclusion in a continuous integration pipeline. In
+addition to the automated tests, the repository ships a `demo.py` script
+at the project root that walks through accepted workflows, rejected
+workflows, and two sequence validator examples; the script gives a
+reviewer a single command path to observe the model behaviour without
+writing Python interactively. The testing approach and detailed results
+are presented in Section 7.
