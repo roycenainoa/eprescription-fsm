@@ -2,13 +2,8 @@
 
 The implementation translates the formal deterministic finite automaton
 defined in Section 5 into a small, auditable Python package. The complete
-source code is available in the public GitHub repository at
-`<INSERT GITHUB REPOSITORY URL HERE>`. The project depends on the
-`transitions` library (version 0.9.2) for the underlying state machine
-engine and on `pytest` (version 8.3.3) for the test suite. No machine
-learning, database, or networking components are introduced, which
-preserves the deterministic and analytically transparent behaviour
-required by the model.
+source code is available in the available in the public GitHub repository at
+[github.com/roycenainoa/eprescription-fsm](https://github.com/roycenainoa/eprescription-fsm). The project depends on the `transitions` library (version 0.9.2) for the underlying state machine engine and on `pytest` (version 8.3.3) for the test suite. No machine learning, database, or networking components are introduced, which preserves the deterministic and analytically transparent behaviour required by the model.
 
 ## 6.1 Module Structure
 
