@@ -60,6 +60,17 @@ pip install -r requirements.txt
 pytest -v
 ```
 
+## Running the demo
+
+A script at the repository root walks through accepted workflows,
+rejected workflows, and the sequence validator. It prints the events
+dispatched, the resulting state transitions, and the rejection reason
+when a guard blocks an illegal input.
+
+```bash
+python demo.py
+```
+
 ## Minimal usage example
 
 ```python
