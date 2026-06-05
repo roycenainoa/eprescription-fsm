@@ -5,10 +5,15 @@ The model defines six discrete states and a strict transition function that
 mirrors the formal definition of a deterministic finite automaton. Every
 event must correspond to a permitted transition for the current state;
 unauthorised inputs are rejected by raising a typed exception.
+
+A reentrant lock guards the public dispatch method so that concurrent
+threads cannot interleave a state read with a state mutation. The FSM
+logic itself remains deterministic; the lock only serialises access.
 """
 
 from __future__ import annotations
 
+import threading
 from typing import List, Optional
 
 from transitions import Machine, MachineError
@@ -48,11 +53,15 @@ class Prescription:
     distinguishes between transitions blocked because the prescription has
     already reached a terminal state and transitions blocked because the
     requested event is not defined for the active state.
+
+    Concurrency: trigger_event holds a reentrant lock for the duration of
+    the dispatch, so concurrent threads see a consistent state and history.
     """
 
     def __init__(self, identifier: Optional[str] = None) -> None:
         self.identifier = identifier
         self.history: List[str] = []
+        self._lock = threading.RLock()
         self.machine = Machine(
             model=self,
             states=STATES,
@@ -75,15 +84,17 @@ class Prescription:
         Wraps the underlying trigger call so that the library MachineError is
         translated into a domain specific exception. Terminal state attempts
         are reported separately from generic invalid transitions to support
-        clearer auditing.
+        clearer auditing. The reentrant lock serialises concurrent dispatches
+        so that two threads cannot mutate the FSM at the same time.
         """
-        if self.state in TERMINAL_STATES:
-            raise TerminalStateError(self.state, event_name)
-        try:
-            self.trigger(event_name)
-        except (MachineError, AttributeError) as exc:
-            raise InvalidTransitionError(self.state, event_name) from exc
-        return self.state
+        with self._lock:
+            if self.state in TERMINAL_STATES:
+                raise TerminalStateError(self.state, event_name)
+            try:
+                self.trigger(event_name)
+            except (MachineError, AttributeError) as exc:
+                raise InvalidTransitionError(self.state, event_name) from exc
+            return self.state
 
     @property
     def is_terminal(self) -> bool:
